@@ -87,6 +87,19 @@ router.get('/admin/:_id',function(req,res,next){
 })
 
 
+/* Get teachers details of a particular admin in a school */
+router.get('/admin/:_id/:School_Id',function(req,res,next){
+  winston.log('info',"Info: Get admin details")
+  Admin.find({_id:req.params._id,School_Id:req.params.School_Id},function(err,data){
+    if(err)
+    res.status(500).send(err);
+    else {
+      res.status(200).json(data);
+    }
+  })
+})
+
+
 /* Add teachers */
 router.post('/newadmin',function(req,res,next){
   winston.log('info',"Info level")
@@ -127,7 +140,7 @@ var mailOptions = {
           from: 'keerthi.regnis@gmail.com', // sender address
           to: req.body.Email_id, // list of receivers
           subject: 'link to change password', // Subject line
-          text: 'http://10.10.5.54:4200/changepassword/'+suc._id+'/admin'           +'     Click on the link' // html body
+          text: 'http://10.10.5.54:4200/adminpassword/'+suc._id         +'     Click on the link' // html body
       };
       email_smtp.sendMail(mailOptions, (error, info) => {
           if (error) {
@@ -157,10 +170,11 @@ var mailOptions = {
 /*save password*/
 router.post('/adminpassword/:_id', function(req,res,next){
 
-  var t= new Password({
-    Id:req.body.Id,
-    Password:req.body.Password
-  })
+  var t= new Password(
+    req.body
+    /*Id:req.body.Id,
+    Password:req.body.Password*/
+  )
 
     t.save(function(err,suc){
       if(err)
